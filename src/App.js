@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled, { createGlobalStyle } from 'styled-components'
 import { Grommet, Box } from 'grommet'
 
@@ -20,6 +20,10 @@ const GlobalStyle = createGlobalStyle`
 const App = () => {
   const [stage, setStage] = useState('normal')
   const [nextFriend, setNextFriend] = useState(null)
+
+  useEffect(() => {
+    if (stage === 'normal') setNextFriend(null)
+  }, [stage])
 
   return (
     <Grommet>
