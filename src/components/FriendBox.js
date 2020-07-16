@@ -3,23 +3,41 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Box } from 'grommet'
 
-const Wrapper = styled(Box)`
+const FriendWrapper = styled(Box)`
   max-width: 100vw;
   max-height: 100vh;
 `
 
-const FriendBox = ({ friend }) => {
-  return <Wrapper>{friend.name}</Wrapper>
+const EmptyWrapper = styled(Box).attrs({
+  background: 'lightgray',
+  margin: 'medium',
+})`
+  border-radius: 50%;
+  border: ${(props) => (props.stage === 'select' ? '1px dashed black' : null)};
+
+  :hover {
+    border-style: ${(props) => (props.stage === 'select' ? 'solid' : null)};
+  }
+`
+
+const FriendBox = ({ friend, stage, onEmptyClick }) => {
+  return friend ? (
+    <FriendWrapper>{friend.name}</FriendWrapper>
+  ) : (
+    <EmptyWrapper onClick={onEmptyClick} stage={stage} />
+  )
 }
 
 const friendType = PropTypes.shape({
   name: PropTypes.string.isRequired,
   totalSales: PropTypes.number.isRequired,
 })
-friendType.children = PropTypes.arrayOf(PropTypes.shape(friendType))
+friendType.children = PropTypes.arrayOf(friendType.isRequired)
 
 FriendBox.propTypes = {
   friend: friendType,
+  stage: PropTypes.oneOf(['normal', 'select', 'input']).isRequired,
+  onEmptyClick: PropTypes.func,
 }
 
 export default FriendBox

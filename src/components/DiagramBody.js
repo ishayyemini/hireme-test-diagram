@@ -12,15 +12,6 @@ const Wrapper = styled(Box)`
   overflow: scroll;
 `
 
-const AltBox = styled(Box)`
-  border-radius: 50%;
-  border: ${(props) => (props.stage === 'select' ? '1px dashed black' : null)};
-
-  :hover {
-    border-style: ${(props) => (props.stage === 'select' ? 'solid' : null)};
-  }
-`
-
 const DiagramBody = ({ stage, setNextFriend, setStage }) => {
   const [data, setData] = useState({})
 
@@ -51,29 +42,24 @@ const DiagramBody = ({ stage, setNextFriend, setStage }) => {
         columns={Array.from(Array(maxX), () => 'xsmall')}
         gap={'small'}
       >
-        {gridLayout.map((item, index) =>
-          data[item.toString()] ? (
-            <FriendBox friend={data[item.toString()]} key={index} />
-          ) : (
-            <AltBox
-              background={'lightgray'}
-              margin={'medium'}
-              stage={stage}
-              onClick={
-                stage === 'select'
-                  ? () => {
-                      setNextFriend((friend) => ({
-                        ...friend,
-                        coords: item.toString(),
-                      }))
-                      setStage('input')
-                    }
-                  : null
-              }
-              key={index}
-            />
-          )
-        )}
+        {gridLayout.map((item, index) => (
+          <FriendBox
+            friend={data[item.toString()]}
+            onEmptyClick={
+              stage === 'select'
+                ? () => {
+                    setNextFriend((friend) => ({
+                      ...friend,
+                      coords: item.toString(),
+                    }))
+                    setStage('input')
+                  }
+                : null
+            }
+            stage={stage}
+            key={index}
+          />
+        ))}
       </Grid>
     </Wrapper>
   )
