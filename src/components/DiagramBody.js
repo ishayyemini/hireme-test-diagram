@@ -63,6 +63,17 @@ const DiagramBody = ({ stage, setNextFriend, setStage }) => {
                   }
                 : null
             }
+            onFriendClick={
+              stage === 'normal'
+                ? () => {
+                    setNextFriend((friend) => ({
+                      ...friend,
+                      parentCoords: item.toString(),
+                    }))
+                    setStage('select')
+                  }
+                : null
+            }
             stage={stage}
             key={index}
           />

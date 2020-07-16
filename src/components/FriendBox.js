@@ -38,13 +38,14 @@ const calcChildProfit = (friend) => {
   return profit
 }
 
-const FriendBox = ({ friend, stage, onEmptyClick }) => {
+const FriendBox = ({ friend, stage, onEmptyClick, onFriendClick }) => {
   if (friend) {
     const profit = friend.sales * _price
     const childProfit = calcChildProfit(friend)
 
     return (
       <FriendWrapper
+        onClick={onFriendClick}
         data-tip={`
           Name: ${friend.name}<br />
           Sales: ${friend.sales}<br />
@@ -71,6 +72,7 @@ FriendBox.propTypes = {
   friend: friendType,
   stage: PropTypes.oneOf(['normal', 'select', 'input']).isRequired,
   onEmptyClick: PropTypes.func,
+  onFriendClick: PropTypes.func,
 }
 
 export default FriendBox

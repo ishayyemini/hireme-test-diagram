@@ -12,11 +12,14 @@ const Wrapper = styled(Box).attrs({
   height: 100px;
 `
 
-const HeaderMenu = ({ stage, setStage }) => {
+const HeaderMenu = ({ stage, setStage, nextFriend }) => {
   return (
     <Wrapper>
       {stage === 'select' ? (
-        <Text margin={'small'}>Please select coordinates for friend</Text>
+        <Text margin={'small'}>
+          Please select coordinates for
+          {nextFriend?.parentCoords ? ' child' : ' friend'}
+        </Text>
       ) : null}
       <Button
         label={stage === 'select' ? 'Cancel' : 'Add Friend'}
@@ -31,6 +34,10 @@ const HeaderMenu = ({ stage, setStage }) => {
 HeaderMenu.propTypes = {
   stage: PropTypes.oneOf(['normal', 'select', 'input']).isRequired,
   setStage: PropTypes.func.isRequired,
+  nextFriend: PropTypes.shape({
+    coords: PropTypes.string.isRequired,
+    parentCoords: PropTypes.string,
+  }),
 }
 
 export default HeaderMenu

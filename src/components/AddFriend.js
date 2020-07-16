@@ -4,18 +4,21 @@ import localforage from 'localforage'
 import { useFormik } from 'formik'
 import PropTypes from 'prop-types'
 
-const AddFriend = ({ setStage, setNextFriend, nextFriend }) => {
+const AddFriend = ({ setStage, nextFriend }) => {
   const formik = useFormik({
     initialValues: { name: '', sales: '' },
     onSubmit: async (values) => {
-      await localforage.setItem(nextFriend.coords.toString(), values)
+      if (nextFriend.parentCoords) {
+        const parent = await localforage.getItem(nextFriend.parentCoords)
+        await localforage.setItem(nextFriend.parentCoords, {
+          ...parent,
+          children: [...(parent.children || []), nextFriend.coords],
+        })
+      }
+      await localforage.setItem(nextFriend.coords, values)
       setStage('normal')
-      setNextFriend(null)
     },
-    onReset: () => {
-      setStage('normal')
-      setNextFriend(null)
-    },
+    onReset: () => setStage('normal'),
   })
 
   return (
@@ -50,8 +53,10 @@ const AddFriend = ({ setStage, setNextFriend, nextFriend }) => {
 
 AddFriend.propTypes = {
   setStage: PropTypes.func.isRequired,
-  setNextFriend: PropTypes.func.isRequired,
-  nextFriend: PropTypes.shape({ coords: PropTypes.string.isRequired }),
+  nextFriend: PropTypes.shape({
+    coords: PropTypes.string.isRequired,
+    parentCoords: PropTypes.string,
+  }),
 }
 
 export default AddFriend
