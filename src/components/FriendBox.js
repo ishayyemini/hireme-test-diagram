@@ -3,9 +3,13 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Box } from 'grommet'
 
-const FriendWrapper = styled(Box)`
-  max-width: 100vw;
-  max-height: 100vh;
+const FriendWrapper = styled(Box).attrs({
+  background: 'lightblue',
+  pad: 'xxsmall',
+  margin: 'auto',
+})`
+  border-radius: 4px;
+  user-select: none;
 `
 
 const EmptyWrapper = styled(Box).attrs({
