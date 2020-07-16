@@ -8,9 +8,7 @@ const Wrapper = styled(Box)`
   max-height: 100vh;
 `
 
-const FriendBox = (props) => {
-  const { friend } = props
-
+const FriendBox = ({ friend }) => {
   return <Wrapper>{friend.name}</Wrapper>
 }
 

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Grid, Box } from 'grommet'
 import localforage from 'localforage'
+import PropTypes from 'prop-types'
+
 import FriendBox from './FriendBox'
 
 const Wrapper = styled(Box)`
@@ -10,17 +12,28 @@ const Wrapper = styled(Box)`
   overflow: scroll;
 `
 
-const DiagramBody = () => {
+const AltBox = styled(Box)`
+  border-radius: 50%;
+  border: ${(props) => (props.stage === 'select' ? '1px dashed black' : null)};
+
+  :hover {
+    border-style: ${(props) => (props.stage === 'select' ? 'solid' : null)};
+  }
+`
+
+const DiagramBody = ({ stage, setNextFriend, setStage }) => {
   const [data, setData] = useState({})
 
   useEffect(() => {
-    const nextData = {}
-    localforage
-      .iterate((value, key) => {
-        nextData[key] = value
-      })
-      .then(() => setData(nextData))
-  }, [])
+    if (stage === 'normal') {
+      const nextData = {}
+      localforage
+        .iterate((value, key) => {
+          nextData[key] = value
+        })
+        .then(() => setData(nextData))
+    }
+  }, [stage])
 
   console.log(data)
 
@@ -42,10 +55,21 @@ const DiagramBody = () => {
           data[item.toString()] ? (
             <FriendBox friend={data[item.toString()]} key={index} />
           ) : (
-            <Box
+            <AltBox
               background={'lightgray'}
-              style={{ borderRadius: '50%' }}
               margin={'medium'}
+              stage={stage}
+              onClick={
+                stage === 'select'
+                  ? () => {
+                      setNextFriend((friend) => ({
+                        ...friend,
+                        coords: item.toString(),
+                      }))
+                      setStage('input')
+                    }
+                  : null
+              }
               key={index}
             />
           )
@@ -53,6 +77,12 @@ const DiagramBody = () => {
       </Grid>
     </Wrapper>
   )
+}
+
+DiagramBody.propTypes = {
+  stage: PropTypes.oneOf(['normal', 'select', 'input']).isRequired,
+  setNextFriend: PropTypes.func.isRequired,
+  setStage: PropTypes.func.isRequired,
 }
 
 export default DiagramBody
