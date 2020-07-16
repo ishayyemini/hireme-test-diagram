@@ -22,7 +22,14 @@ const DiagramBody = ({ stage, setNextFriend, setStage }) => {
         .iterate((value, key) => {
           nextData[key] = value
         })
-        .then(() => setData(nextData))
+        .then(() => {
+          Object.keys(nextData).forEach(
+            (key) =>
+              (nextData[key].children =
+                nextData[key].children?.map((coords) => nextData[coords]) ?? [])
+          )
+          setData(nextData)
+        })
     }
   }, [stage])
 

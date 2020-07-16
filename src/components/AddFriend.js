@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 
 const AddFriend = ({ setStage, setNextFriend, nextFriend }) => {
   const formik = useFormik({
-    initialValues: { name: '', totalSales: '' },
+    initialValues: { name: '', sales: '' },
     onSubmit: async (values) => {
       await localforage.setItem(nextFriend.coords.toString(), values)
       setStage('normal')
@@ -35,11 +35,7 @@ const AddFriend = ({ setStage, setNextFriend, nextFriend }) => {
           </Box>
 
           <Box margin={'xsmall'}>
-            <TextInput
-              placeholder={'Total Sales'}
-              name={'totalSales'}
-              type={'number'}
-            />
+            <TextInput placeholder={'Sales'} name={'sales'} type={'number'} />
           </Box>
 
           <Box direction={'row'} justify={'center'}>

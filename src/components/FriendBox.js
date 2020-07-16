@@ -2,10 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Box } from 'grommet'
+import ReactTooltip from 'react-tooltip'
 
 const FriendWrapper = styled(Box).attrs({
   background: 'lightblue',
-  pad: 'xxsmall',
+  pad: 'xsmall',
   margin: 'auto',
 })`
   border-radius: 4px;
@@ -24,17 +25,45 @@ const EmptyWrapper = styled(Box).attrs({
   }
 `
 
+const _price = 100
+const _childPercent = 0.2
+
+const calcChildProfit = (friend) => {
+  let profit = 0
+  if (friend.children?.length) {
+    friend.children.forEach((child) => {
+      profit += (calcChildProfit(child) + child.sales * _price) * _childPercent
+    })
+  }
+  return profit
+}
+
 const FriendBox = ({ friend, stage, onEmptyClick }) => {
-  return friend ? (
-    <FriendWrapper>{friend.name}</FriendWrapper>
-  ) : (
-    <EmptyWrapper onClick={onEmptyClick} stage={stage} />
-  )
+  if (friend) {
+    const profit = friend.sales * _price
+    const childProfit = calcChildProfit(friend)
+
+    return (
+      <FriendWrapper
+        data-tip={`
+          Name: ${friend.name}<br />
+          Sales: ${friend.sales}<br />
+          Sales profit: ${profit}<br />
+          Children's sales profit: ${childProfit}<br />
+          Total profit: ${profit + childProfit}
+        `}
+        data-html={true}
+      >
+        {friend.name}
+        <ReactTooltip effect={'solid'} />
+      </FriendWrapper>
+    )
+  } else return <EmptyWrapper onClick={onEmptyClick} stage={stage} />
 }
 
 const friendType = PropTypes.shape({
   name: PropTypes.string.isRequired,
-  totalSales: PropTypes.number.isRequired,
+  sales: PropTypes.number.isRequired,
 })
 friendType.children = PropTypes.arrayOf(friendType.isRequired)
 
