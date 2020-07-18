@@ -48,7 +48,6 @@ const FriendBox = ({
   onDrop,
   id,
 }) => {
-  const [isDragging, setIsDragging] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
 
   useEffect(() => {
@@ -109,14 +108,10 @@ const FriendBox = ({
             `}
             data-html={true}
             data-for={`tooltip-${id}`}
-            data-tip-disable={isDragging}
+            data-tip-disable={stage === 'select'}
             id={id}
-            onDragStart={(e) => {
-              setIsDragging(true)
-              e.dataTransfer.setData('text', e.target.id)
-            }}
-            onDragEnd={() => setIsDragging(false)}
-            draggable
+            onDragStart={(e) => e.dataTransfer.setData('text', e.target.id)}
+            draggable={stage !== 'select'}
           >
             {friend.name}
           </FriendWrapper>

@@ -63,17 +63,15 @@ const DiagramBody = ({ stage, setNextFriend, setStage }) => {
                   }
                 : null
             }
-            onFriendClick={
-              stage === 'normal'
-                ? () => {
-                    setNextFriend((friend) => ({
-                      ...friend,
-                      parentCoords: item.toString(),
-                    }))
-                    setStage('select')
-                  }
-                : null
-            }
+            onFriendClick={() => {
+              if (stage === 'normal') {
+                setNextFriend((friend) => ({
+                  ...friend,
+                  parentCoords: item.toString(),
+                }))
+                setStage('select')
+              }
+            }}
             onDrop={async (e) => {
               const [fromX, fromY] = e.dataTransfer
                 .getData('text')
