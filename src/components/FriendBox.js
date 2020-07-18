@@ -37,7 +37,7 @@ const calcChildProfit = (friend) => {
       profit += (calcChildProfit(child) + child.sales * _price) * _childPercent
     })
   }
-  return profit
+  return Math.round(profit)
 }
 
 const FriendBox = ({
