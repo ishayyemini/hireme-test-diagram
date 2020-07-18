@@ -36,8 +36,8 @@ const DiagramBody = ({ stage, setNextFriend, setStage }) => {
   console.log(data)
 
   const [maxX, maxY] = [10, 10]
-  const gridLayout = Array.from(Array(maxX), (_, x) =>
-    Array.from(Array(maxY), (_, y) => [x, y])
+  const gridLayout = Array.from(Array(maxY), (_, y) =>
+    Array.from(Array(maxX), (_, x) => [x, y])
   ).flat()
 
   return (
@@ -45,9 +45,8 @@ const DiagramBody = ({ stage, setNextFriend, setStage }) => {
       onScroll={(e) => console.log(e.target.scrollTop, e.target.scrollLeft)}
     >
       <Grid
-        rows={Array.from(Array(maxY), () => 'xsmall')}
-        columns={Array.from(Array(maxX), () => 'xsmall')}
-        gap={'small'}
+        rows={Array.from(Array(maxY), () => '100px')}
+        columns={Array.from(Array(maxX), () => '100px')}
       >
         {gridLayout.map((item, index) => (
           <FriendBox

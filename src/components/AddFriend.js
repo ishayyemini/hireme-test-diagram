@@ -15,7 +15,8 @@ const AddFriend = ({ setStage, nextFriend }) => {
           children: [...(parent.children || []), nextFriend.coords],
         })
       }
-      await localforage.setItem(nextFriend.coords, values)
+      const [x, y] = nextFriend.coords.split(',').map((i) => parseInt(i))
+      await localforage.setItem(nextFriend.coords, { ...values, x, y })
       setStage('normal')
     },
     onReset: () => setStage('normal'),
