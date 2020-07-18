@@ -46,16 +46,36 @@ const FriendBox = ({ friend, stage, onEmptyClick, onFriendClick }) => {
     const childProfit = calcChildProfit(friend)
 
     const lines = friend.children?.map((child, index) => {
+      const xDiff = child.x - friend.x
+      const yDiff = child.y - friend.y
+      const points = Array.from(
+        Array(Math.max(Math.round((xDiff ** 2 + yDiff ** 2) ** 0.5), 3)),
+        () => null
+      )
+        .map((_, i, arr) => [
+          (xDiff / (arr.length - 1)) * i * 100,
+          (yDiff / (arr.length - 1)) * i * 100,
+        ])
+        .join(' ')
+
       return (
         <svg
           style={{ position: 'absolute', zIndex: -1, overflow: 'visible' }}
           key={index}
         >
-          <line
-            x2={(child.x - friend.x) * 100}
-            y2={(child.y - friend.y) * 100}
-            stroke={'black'}
-          />
+          <defs>
+            <marker
+              id={'t'}
+              markerWidth={'8'}
+              markerHeight={'8'}
+              orient={'auto'}
+              refY={'4'}
+            >
+              <path d={'M0,0 L8,4 0,8'} />
+            </marker>
+          </defs>
+
+          <polyline markerMid={'url(#t)'} points={points} stroke={'black'} />
         </svg>
       )
     })
