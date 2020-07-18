@@ -35,7 +35,6 @@ HeaderMenu.propTypes = {
   stage: PropTypes.oneOf(['normal', 'select', 'input']).isRequired,
   setStage: PropTypes.func.isRequired,
   nextFriend: PropTypes.shape({
-    coords: PropTypes.string.isRequired,
     parentCoords: PropTypes.string,
   }),
 }

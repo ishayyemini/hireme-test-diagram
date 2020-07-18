@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Box, Stack } from 'grommet'
@@ -13,12 +13,12 @@ const FriendWrapper = styled(Box).attrs({
   user-select: none;
 `
 
-const EmptyWrapper = styled(Box).attrs({
-  background: 'lightgray',
-  margin: 'medium',
+const EmptyWrapper = styled(Box).attrs((props) => ({
+  background: props.isHovering ? 'black' : 'lightgray',
+  margin: props.isHovering ? 'small' : 'medium',
   responsive: false,
   round: 'full',
-})`
+}))`
   opacity: 0.5;
   border: ${(props) => (props.stage === 'select' ? '1px dashed black' : null)};
 
@@ -40,7 +40,21 @@ const calcChildProfit = (friend) => {
   return profit
 }
 
-const FriendBox = ({ friend, stage, onEmptyClick, onFriendClick }) => {
+const FriendBox = ({
+  friend,
+  stage,
+  onEmptyClick,
+  onFriendClick,
+  onDrop,
+  id,
+}) => {
+  const [isDragging, setIsDragging] = useState(false)
+  const [isHovering, setIsHovering] = useState(false)
+
+  useEffect(() => {
+    setIsHovering(false)
+  }, [friend])
+
   if (friend) {
     const profit = friend.sales * _price
     const childProfit = calcChildProfit(friend)
@@ -94,14 +108,37 @@ const FriendBox = ({ friend, stage, onEmptyClick, onFriendClick }) => {
               Total profit: ${profit + childProfit}
             `}
             data-html={true}
+            data-for={`tooltip-${id}`}
+            data-tip-disable={isDragging}
+            id={id}
+            onDragStart={(e) => {
+              setIsDragging(true)
+              e.dataTransfer.setData('text', e.target.id)
+            }}
+            onDragEnd={() => setIsDragging(false)}
+            draggable
           >
             {friend.name}
           </FriendWrapper>
         </Stack>
-        <ReactTooltip effect={'solid'} />
+        <ReactTooltip effect={'solid'} id={`tooltip-${id}`} />
       </>
     )
-  } else return <EmptyWrapper onClick={onEmptyClick} stage={stage} />
+  } else
+    return (
+      <EmptyWrapper
+        onClick={onEmptyClick}
+        stage={stage}
+        isHovering={isHovering}
+        onDragOver={(e) => {
+          setIsHovering(true)
+          e.preventDefault()
+        }}
+        onDragLeave={() => setIsHovering(false)}
+        onDrop={onDrop}
+        id={id}
+      />
+    )
 }
 
 const friendType = PropTypes.shape({
@@ -115,6 +152,8 @@ FriendBox.propTypes = {
   stage: PropTypes.oneOf(['normal', 'select', 'input']).isRequired,
   onEmptyClick: PropTypes.func,
   onFriendClick: PropTypes.func,
+  onDrop: PropTypes.func,
+  id: PropTypes.string.isRequired,
 }
 
 export default FriendBox

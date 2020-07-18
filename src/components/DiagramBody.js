@@ -14,6 +14,7 @@ const Wrapper = styled(Box)`
 
 const DiagramBody = ({ stage, setNextFriend, setStage }) => {
   const [data, setData] = useState({})
+  const [update, force] = useState(null)
 
   useEffect(() => {
     if (stage === 'normal') {
@@ -31,7 +32,7 @@ const DiagramBody = ({ stage, setNextFriend, setStage }) => {
           setData(nextData)
         })
     }
-  }, [stage])
+  }, [stage, update])
 
   console.log(data)
 
@@ -73,6 +74,54 @@ const DiagramBody = ({ stage, setNextFriend, setStage }) => {
                   }
                 : null
             }
+            onDrop={async (e) => {
+              const [fromX, fromY] = e.dataTransfer
+                .getData('text')
+                .split(',')
+                .map((i) => parseInt(i))
+              const [toX, toY] = e.target.id.split(',').map((i) => parseInt(i))
+              console.log('dragging from:', fromX, fromY, 'into:', toX, toY)
+
+              if ((fromX !== toX || fromY !== toY) && !data[[toX, toY]]) {
+                await localforage
+                  .getItem([fromX, fromY].toString())
+                  .then((friend) =>
+                    localforage.setItem([toX, toY].toString(), {
+                      ...friend,
+                      x: toX,
+                      y: toY,
+                    })
+                  )
+                  .then(() => localforage.removeItem([fromX, fromY].toString()))
+
+                const hasParent = Object.values(data).find((item) =>
+                  item.children.find(
+                    (child) => child.x === fromX && child.y === fromY
+                  )
+                )
+                if (hasParent) {
+                  await localforage
+                    .getItem([hasParent.x, hasParent.y].toString())
+                    .then((parent) =>
+                      localforage.setItem(
+                        [hasParent.x, hasParent.y].toString(),
+                        {
+                          ...parent,
+                          children: [
+                            ...parent.children.filter(
+                              (key) => key !== [fromX, fromY].toString()
+                            ),
+                            [toX, toY].toString(),
+                          ],
+                        }
+                      )
+                    )
+                }
+
+                force((s) => !s)
+              }
+            }}
+            id={item.toString()}
             stage={stage}
             key={index}
           />
