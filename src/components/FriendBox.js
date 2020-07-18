@@ -8,6 +8,7 @@ const FriendWrapper = styled(Box).attrs({
   background: 'lightblue',
   pad: 'xsmall',
   margin: 'auto',
+  responsive: false,
 })`
   border-radius: 4px;
   user-select: none;
@@ -16,8 +17,9 @@ const FriendWrapper = styled(Box).attrs({
 const EmptyWrapper = styled(Box).attrs({
   background: 'lightgray',
   margin: 'medium',
+  responsive: false,
+  round: 'full',
 })`
-  border-radius: 50%;
   border: ${(props) => (props.stage === 'select' ? '1px dashed black' : null)};
 
   :hover {
