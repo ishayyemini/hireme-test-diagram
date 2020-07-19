@@ -119,6 +119,7 @@ const DiagramBody = ({ stage, setNextFriend, setStage }) => {
                 force((s) => !s)
               }
             }}
+            update={() => force((s) => !s)}
             id={item.toString()}
             stage={stage}
             key={index}

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import { Box, Stack } from 'grommet'
+import { Box, Button, Stack } from 'grommet'
 import ReactTooltip from 'react-tooltip'
+
+import EditFriend from './EditFriend'
 
 const FriendWrapper = styled(Box).attrs({
   background: 'lightblue',
@@ -11,6 +13,8 @@ const FriendWrapper = styled(Box).attrs({
 })`
   border-radius: 4px;
   user-select: none;
+  overflow-wrap: break-word;
+  text-align: center;
 `
 
 const EmptyWrapper = styled(Box).attrs((props) => ({
@@ -25,6 +29,13 @@ const EmptyWrapper = styled(Box).attrs((props) => ({
   :hover {
     border-style: ${(props) => (props.stage === 'select' ? 'solid' : null)};
   }
+`
+
+const EditButton = styled(Button).attrs({ title: 'edit' })`
+  background: white url(${'/create-24px.svg'}) no-repeat center;
+  height: 36px;
+  width: 24px;
+  float: right;
 `
 
 const _price = 100
@@ -47,8 +58,11 @@ const FriendBox = ({
   onFriendClick,
   onDrop,
   id,
+  update,
 }) => {
   const [isHovering, setIsHovering] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const [isEdit, setIsEdit] = useState(false)
 
   useEffect(() => {
     setIsHovering(false)
@@ -95,28 +109,51 @@ const FriendBox = ({
 
     return (
       <>
-        <Stack anchor={'center'} margin={'auto'}>
+        <Stack anchor={'center'} margin={'auto'} style={{ maxWidth: '100%' }}>
           {lines}
           <FriendWrapper
             onClick={onFriendClick}
-            data-tip={`
-              Name: ${friend.name}<br />
-              Sales: ${friend.sales}<br />
-              Sales profit: ${profit}<br />
-              Children's sales profit: ${childProfit}<br />
-              Total profit: ${profit + childProfit}
-            `}
-            data-html={true}
-            data-for={`tooltip-${id}`}
-            data-tip-disable={stage === 'select'}
-            id={id}
-            onDragStart={(e) => e.dataTransfer.setData('text', e.target.id)}
+            onDragEnd={() => setIsDragging(false)}
+            onDragStart={(e) => {
+              setIsDragging(true)
+              e.dataTransfer.setData('text', e.target.id)
+            }}
             draggable={stage !== 'select'}
+            data-for={`tooltip-${id}`}
+            data-tip
+            id={id}
           >
             {friend.name}
           </FriendWrapper>
         </Stack>
-        <ReactTooltip effect={'solid'} id={`tooltip-${id}`} />
+
+        {!isDragging && stage !== 'select' && !isEdit ? (
+          <ReactTooltip
+            id={`tooltip-${id}`}
+            effect={'solid'}
+            delayHide={200}
+            clickable
+          >
+            <EditButton onClick={() => setIsEdit(true)} />
+            <div>
+              <div>Name: {friend.name}</div>
+              <div>Sales: {friend.sales}</div>
+              <div>Sales profit: ${profit}</div>
+              <div>Children's sales profit: ${childProfit}</div>
+              <div>Total profit: ${profit + childProfit}</div>
+            </div>
+          </ReactTooltip>
+        ) : null}
+
+        {isEdit ? (
+          <EditFriend
+            friendValues={friend}
+            submit={() => {
+              setIsEdit(false)
+              update()
+            }}
+          />
+        ) : null}
       </>
     )
   } else
@@ -149,6 +186,7 @@ FriendBox.propTypes = {
   onFriendClick: PropTypes.func,
   onDrop: PropTypes.func,
   id: PropTypes.string.isRequired,
+  update: PropTypes.func.isRequired,
 }
 
 export default FriendBox
