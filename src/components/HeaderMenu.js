@@ -24,19 +24,33 @@ const HeaderMenu = ({ stage, setStage, nextFriend }) => {
         </Text>
       ) : null}
 
-      <Button
-        label={stage === 'select' ? 'Cancel' : 'Add Friend'}
-        margin={'small'}
-        onClick={() => setStage(stage === 'select' ? 'normal' : 'select')}
-      />
+      {stage !== 'tableEdit' ? (
+        <Button
+          label={stage === 'select' ? 'Cancel' : 'Add Friend'}
+          onClick={() => setStage(stage === 'select' ? 'normal' : 'select')}
+          margin={'small'}
+        />
+      ) : null}
 
-      {stage !== 'select' ? (
+      {stage !== 'select' && stage !== 'tableEdit' ? (
         <Button
           label={
-            'Switch to ' + (stage === 'table' ? 'Diagram' : 'Table') + ' View'
+            'Switch to ' +
+            (stage.includes('table') ? 'Diagram' : 'Table') +
+            ' View'
+          }
+          onClick={() => setStage(stage.includes('table') ? 'normal' : 'table')}
+          margin={'small'}
+        />
+      ) : null}
+
+      {stage.includes('table') ? (
+        <Button
+          label={stage === 'tableEdit' ? 'Done' : 'Edit Table'}
+          onClick={() =>
+            setStage(stage === 'tableEdit' ? 'table' : 'tableEdit')
           }
           margin={'small'}
-          onClick={() => setStage(stage === 'table' ? 'normal' : 'table')}
         />
       ) : null}
     </Wrapper>
@@ -44,7 +58,8 @@ const HeaderMenu = ({ stage, setStage, nextFriend }) => {
 }
 
 HeaderMenu.propTypes = {
-  stage: PropTypes.oneOf(['normal', 'select', 'input', 'table']).isRequired,
+  stage: PropTypes.oneOf(['normal', 'select', 'input', 'table', 'tableEdit'])
+    .isRequired,
   setStage: PropTypes.func.isRequired,
   nextFriend: PropTypes.shape({
     parentCoords: PropTypes.string,

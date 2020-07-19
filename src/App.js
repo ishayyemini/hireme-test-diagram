@@ -32,8 +32,8 @@ const App = () => {
       <Wrapper>
         <HeaderMenu stage={stage} setStage={setStage} nextFriend={nextFriend} />
 
-        {stage === 'table' ? (
-          <TableBody />
+        {stage.includes('table') ? (
+          <TableBody stage={stage} />
         ) : (
           <DiagramBody
             stage={stage}

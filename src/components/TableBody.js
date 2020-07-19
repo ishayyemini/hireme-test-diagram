@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { Box, DataTable, Meter } from 'grommet'
+import { Box, DataTable, Meter, TextInput } from 'grommet'
 import localforage from 'localforage'
 import ReactTooltip from 'react-tooltip'
+import PropTypes from 'prop-types'
 
 const Wrapper = styled(Box)`
   max-width: 100%;
@@ -23,38 +24,52 @@ const childProfit = (friend) => {
   return Math.round(profit)
 }
 
-const TableBody = () => {
+const TableBody = ({ stage }) => {
   const [data, setData] = useState({})
 
   useEffect(() => {
-    const nextData = {}
-    localforage
-      .iterate((value, key) => {
-        nextData[key] = value
-      })
-      .then(() => {
-        Object.keys(nextData).forEach((key) => {
-          nextData[key].children =
-            nextData[key].children?.map((coords) => nextData[coords]) ?? []
+    if (stage === 'table') {
+      const nextData = {}
+      localforage
+        .iterate((value, key) => {
+          nextData[key] = value
         })
-        Object.keys(nextData).forEach((key) => {
-          nextData[key] = {
-            ...nextData[key],
-            key: `${nextData[key].x},${nextData[key].y}`,
-            salesProfit: nextData[key].sales * _price,
-            childProfit: childProfit(nextData[key], nextData),
-          }
-          nextData[key].key = `${nextData[key].x},${nextData[key].y}`
-          nextData[key].salesProfit = nextData[key].sales * _price
-          nextData[key].childProfit = childProfit(nextData[key], nextData)
-          nextData[key].totalProfit =
-            nextData[key].salesProfit + nextData[key].childProfit
+        .then(() => {
+          Object.keys(nextData).forEach((key) => {
+            nextData[key].children =
+              nextData[key].children?.map((coords) => nextData[coords]) ?? []
+          })
+          setData(nextData)
         })
-        setData(nextData)
-      })
-  }, [])
+    }
+  }, [stage])
 
   console.log(data)
+
+  const updateField = useCallback(
+    ({ target: { name, value } }) => {
+      const [key, field] = name.split('.')
+      value = field === 'sales' ? Number(value) : value
+      setData({ ...data, [key]: { ...data[key], [field]: value } })
+    },
+    [data]
+  )
+
+  const saveField = useCallback(({ target: { name, value } }) => {
+    const [key, field] = name.split('.')
+    value = field === 'sales' ? Number(value) : value
+    localforage
+      .getItem(key)
+      .then((friend) => localforage.setItem(key, { ...friend, [field]: value }))
+  }, [])
+
+  const tableData = Object.entries(data).map(([key, value]) => ({
+    ...value,
+    salesProfit: value.sales * _price,
+    childProfit: childProfit(value),
+    totalProfit: value.sales * _price + childProfit(value),
+    key,
+  }))
 
   return (
     <Wrapper>
@@ -63,26 +78,45 @@ const TableBody = () => {
           {
             property: 'name',
             header: 'Name',
+            render: (datum) =>
+              stage === 'tableEdit' ? (
+                <TextInput
+                  value={data[datum.key].name}
+                  name={`${datum.key}.name`}
+                  onChange={updateField}
+                  onBlur={saveField}
+                />
+              ) : (
+                datum.name
+              ),
           },
           {
             property: 'sales',
             header: 'Sales',
-            render: (datum) => (
-              <>
-                <Box data-tip={datum.sales + ' sales'}>
-                  <Meter
-                    values={[{ value: datum.sales }]}
-                    max={Math.max(
-                      ...Object.values(data).map((item) => item.sales)
-                    )}
-                    thickness={'small'}
-                    size={'small'}
-                    margin={{ vertical: 'small' }}
-                  />
-                </Box>
-                <ReactTooltip effect={'solid'} />
-              </>
-            ),
+            render: (datum) =>
+              stage === 'tableEdit' ? (
+                <TextInput
+                  value={data[datum.key].sales}
+                  name={`${datum.key}.sales`}
+                  onChange={updateField}
+                  onBlur={saveField}
+                />
+              ) : (
+                <>
+                  <Box data-tip={datum.sales + ' sales'}>
+                    <Meter
+                      values={[{ value: datum.sales }]}
+                      max={Math.max(
+                        ...Object.values(data).map((item) => item.sales)
+                      )}
+                      thickness={'small'}
+                      size={'small'}
+                      margin={{ vertical: 'small' }}
+                    />
+                  </Box>
+                  <ReactTooltip effect={'solid'} />
+                </>
+              ),
           },
           {
             property: 'salesProfit',
@@ -100,12 +134,16 @@ const TableBody = () => {
             render: (datum) => '$' + datum.totalProfit,
           },
         ]}
-        data={Object.values(data)}
+        data={tableData}
         primaryKey={'key'}
         sortable
       />
     </Wrapper>
   )
+}
+
+TableBody.propTypes = {
+  stage: PropTypes.oneOf(['table', 'tableEdit']).isRequired,
 }
 
 export default TableBody
