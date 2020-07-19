@@ -7,9 +7,11 @@ const Wrapper = styled(Box).attrs({
   direction: 'row',
   background: 'beige',
   align: 'center',
+  pad: 'small',
+  responsive: false,
 })`
+  flex-shrink: 0;
   width: 100vw;
-  height: 100px;
 `
 
 const HeaderMenu = ({ stage, setStage, nextFriend }) => {
@@ -21,18 +23,28 @@ const HeaderMenu = ({ stage, setStage, nextFriend }) => {
           {nextFriend?.parentCoords ? ' child' : ' friend'}
         </Text>
       ) : null}
+
       <Button
         label={stage === 'select' ? 'Cancel' : 'Add Friend'}
-        size={'small'}
         margin={'small'}
         onClick={() => setStage(stage === 'select' ? 'normal' : 'select')}
       />
+
+      {stage !== 'select' ? (
+        <Button
+          label={
+            'Switch to ' + (stage === 'table' ? 'Diagram' : 'Table') + ' View'
+          }
+          margin={'small'}
+          onClick={() => setStage(stage === 'table' ? 'normal' : 'table')}
+        />
+      ) : null}
     </Wrapper>
   )
 }
 
 HeaderMenu.propTypes = {
-  stage: PropTypes.oneOf(['normal', 'select', 'input']).isRequired,
+  stage: PropTypes.oneOf(['normal', 'select', 'input', 'table']).isRequired,
   setStage: PropTypes.func.isRequired,
   nextFriend: PropTypes.shape({
     parentCoords: PropTypes.string,

@@ -3,6 +3,7 @@ import styled, { createGlobalStyle } from 'styled-components'
 import { Grommet, Box } from 'grommet'
 
 import DiagramBody from './components/DiagramBody'
+import TableBody from './components/TableBody'
 import HeaderMenu from './components/HeaderMenu'
 import AddFriend from './components/AddFriend'
 
@@ -30,11 +31,17 @@ const App = () => {
       <GlobalStyle />
       <Wrapper>
         <HeaderMenu stage={stage} setStage={setStage} nextFriend={nextFriend} />
-        <DiagramBody
-          stage={stage}
-          setStage={setStage}
-          setNextFriend={setNextFriend}
-        />
+
+        {stage === 'table' ? (
+          <TableBody />
+        ) : (
+          <DiagramBody
+            stage={stage}
+            setStage={setStage}
+            setNextFriend={setNextFriend}
+          />
+        )}
+
         {stage === 'input' ? (
           <AddFriend
             setStage={setStage}

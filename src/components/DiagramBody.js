@@ -17,7 +17,7 @@ const DiagramBody = ({ stage, setNextFriend, setStage }) => {
   const [update, force] = useState(null)
 
   useEffect(() => {
-    if (stage === 'normal') {
+    if (stage === 'normal' || stage === 'select') {
       const nextData = {}
       localforage
         .iterate((value, key) => {
@@ -131,7 +131,7 @@ const DiagramBody = ({ stage, setNextFriend, setStage }) => {
 }
 
 DiagramBody.propTypes = {
-  stage: PropTypes.oneOf(['normal', 'select', 'input']).isRequired,
+  stage: PropTypes.oneOf(['normal', 'select', 'input', 'table']).isRequired,
   setNextFriend: PropTypes.func.isRequired,
   setStage: PropTypes.func.isRequired,
 }
