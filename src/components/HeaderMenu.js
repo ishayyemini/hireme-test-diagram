@@ -53,13 +53,27 @@ const HeaderMenu = ({ stage, setStage, nextFriend }) => {
           margin={'small'}
         />
       ) : null}
+
+      {stage !== 'select' ? (
+        <Button
+          label={stage === 'rawInput' ? 'Back to Diagram View' : 'Input/Export'}
+          onClick={() => setStage(stage === 'rawInput' ? 'normal' : 'rawInput')}
+          margin={'small'}
+        />
+      ) : null}
     </Wrapper>
   )
 }
 
 HeaderMenu.propTypes = {
-  stage: PropTypes.oneOf(['normal', 'select', 'input', 'table', 'tableEdit'])
-    .isRequired,
+  stage: PropTypes.oneOf([
+    'normal',
+    'select',
+    'input',
+    'table',
+    'tableEdit',
+    'rawInput',
+  ]).isRequired,
   setStage: PropTypes.func.isRequired,
   nextFriend: PropTypes.shape({
     parentCoords: PropTypes.string,

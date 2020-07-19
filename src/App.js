@@ -6,6 +6,7 @@ import DiagramBody from './components/DiagramBody'
 import TableBody from './components/TableBody'
 import HeaderMenu from './components/HeaderMenu'
 import AddFriend from './components/AddFriend'
+import InputExportBody from './components/InputExportBody'
 
 const Wrapper = styled(Box)`
   max-width: 100vw;
@@ -32,15 +33,17 @@ const App = () => {
       <Wrapper>
         <HeaderMenu stage={stage} setStage={setStage} nextFriend={nextFriend} />
 
-        {stage.includes('table') ? (
-          <TableBody stage={stage} />
-        ) : (
+        {stage.includes('table') ? <TableBody stage={stage} /> : null}
+
+        {stage === 'rawInput' ? <InputExportBody stage={stage} /> : null}
+
+        {!stage.includes('table') && stage !== 'rawInput' ? (
           <DiagramBody
             stage={stage}
             setStage={setStage}
             setNextFriend={setNextFriend}
           />
-        )}
+        ) : null}
 
         {stage === 'input' ? (
           <AddFriend

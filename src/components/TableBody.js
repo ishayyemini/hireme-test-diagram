@@ -130,7 +130,7 @@ const TableBody = ({ stage }) => {
           },
           {
             property: 'totalProfit',
-            header: 'Total Profit',
+            header: 'Total profit',
             render: (datum) => '$' + datum.totalProfit,
           },
         ]}
