@@ -35,7 +35,7 @@ const App = () => {
 
         {stage.includes('table') ? <TableBody stage={stage} /> : null}
 
-        {stage === 'rawInput' ? <InputExportBody stage={stage} /> : null}
+        {stage === 'rawInput' ? <InputExportBody setStage={setStage} /> : null}
 
         {!stage.includes('table') && stage !== 'rawInput' ? (
           <DiagramBody

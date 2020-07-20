@@ -9,6 +9,7 @@ const Wrapper = styled(Box).attrs({
   align: 'center',
   pad: 'small',
   responsive: false,
+  wrap: true,
 })`
   flex-shrink: 0;
   width: 100vw;

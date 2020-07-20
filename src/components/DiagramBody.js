@@ -12,6 +12,8 @@ const Wrapper = styled(Box)`
   overflow: scroll;
 `
 
+const [_maxX, _maxY] = [10, 10]
+
 const DiagramBody = ({ stage, setNextFriend, setStage }) => {
   const [data, setData] = useState({})
   const [update, force] = useState(null)
@@ -36,9 +38,8 @@ const DiagramBody = ({ stage, setNextFriend, setStage }) => {
 
   console.log(data)
 
-  const [maxX, maxY] = [10, 10]
-  const gridLayout = Array.from(Array(maxY), (_, y) =>
-    Array.from(Array(maxX), (_, x) => [x, y])
+  const gridLayout = Array.from(Array(_maxY), (_, y) =>
+    Array.from(Array(_maxX), (_, x) => [x, y])
   ).flat()
 
   return (
@@ -46,8 +47,8 @@ const DiagramBody = ({ stage, setNextFriend, setStage }) => {
       onScroll={(e) => console.log(e.target.scrollTop, e.target.scrollLeft)}
     >
       <Grid
-        rows={Array.from(Array(maxY), () => '100px')}
-        columns={Array.from(Array(maxX), () => '100px')}
+        rows={Array.from(Array(_maxY), () => '100px')}
+        columns={Array.from(Array(_maxX), () => '100px')}
       >
         {gridLayout.map((item, index) => (
           <FriendBox
