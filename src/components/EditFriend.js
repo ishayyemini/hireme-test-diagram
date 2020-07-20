@@ -1,19 +1,15 @@
 import React from 'react'
 import { Box, Button, Layer, Text, TextInput } from 'grommet'
-import localforage from 'localforage'
 import { useFormik } from 'formik'
 import PropTypes from 'prop-types'
+
+import storage from '../data'
 
 const EditFriend = ({ friendValues: { x, y, name, sales }, submit }) => {
   const formik = useFormik({
     initialValues: { name, sales },
     onSubmit: async (values) => {
-      await localforage.getItem([x, y].toString()).then((friend) =>
-        localforage.setItem([x, y].toString(), {
-          ...friend,
-          ...values,
-        })
-      )
+      await storage.update([x, y], values)
       submit()
     },
     onReset: submit,

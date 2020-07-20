@@ -1,22 +1,21 @@
 import React from 'react'
 import { Box, Button, Layer, Text, TextInput } from 'grommet'
-import localforage from 'localforage'
 import { useFormik } from 'formik'
 import PropTypes from 'prop-types'
 
-const AddFriend = ({ setStage, nextFriend }) => {
+import storage from '../data'
+
+const AddFriend = ({ setStage, nextFriend: { coords, parentCoords } }) => {
   const formik = useFormik({
     initialValues: { name: '', sales: '' },
     onSubmit: async (values) => {
-      if (nextFriend.parentCoords) {
-        const parent = await localforage.getItem(nextFriend.parentCoords)
-        await localforage.setItem(nextFriend.parentCoords, {
-          ...parent,
-          children: [...(parent.children || []), nextFriend.coords],
-        })
+      if (parentCoords) {
+        await storage.update(parentCoords, ({ children, ...oldValues }) => ({
+          ...oldValues,
+          children: [...(children || []), coords],
+        }))
       }
-      const [x, y] = nextFriend.coords.split(',').map((i) => parseInt(i))
-      await localforage.setItem(nextFriend.coords, { ...values, x, y })
+      await storage.add(coords, values)
       setStage('normal')
     },
     onReset: () => setStage('normal'),

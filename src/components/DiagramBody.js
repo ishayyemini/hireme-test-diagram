@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Grid, Box } from 'grommet'
-import localforage from 'localforage'
 import PropTypes from 'prop-types'
 
 import FriendBox from './FriendBox'
+import storage from '../data'
+import { _maxX, _maxY } from '../config'
 
 const Wrapper = styled(Box)`
   max-width: 100%;
@@ -12,28 +13,12 @@ const Wrapper = styled(Box)`
   overflow: scroll;
 `
 
-const [_maxX, _maxY] = [10, 10]
-
 const DiagramBody = ({ stage, setNextFriend, setStage }) => {
   const [data, setData] = useState({})
   const [update, force] = useState(null)
 
   useEffect(() => {
-    if (stage === 'normal' || stage === 'select') {
-      const nextData = {}
-      localforage
-        .iterate((value, key) => {
-          nextData[key] = value
-        })
-        .then(() => {
-          Object.keys(nextData).forEach(
-            (key) =>
-              (nextData[key].children =
-                nextData[key].children?.map((coords) => nextData[coords]) ?? [])
-          )
-          setData(nextData)
-        })
-    }
+    if (stage === 'normal' || stage === 'select') storage.getAll().then(setData)
   }, [stage, update])
 
   console.log(data)
@@ -82,40 +67,26 @@ const DiagramBody = ({ stage, setNextFriend, setStage }) => {
               console.log('dragging from:', fromX, fromY, 'into:', toX, toY)
 
               if ((fromX !== toX || fromY !== toY) && !data[[toX, toY]]) {
-                await localforage
-                  .getItem([fromX, fromY].toString())
-                  .then((friend) =>
-                    localforage.setItem([toX, toY].toString(), {
-                      ...friend,
-                      x: toX,
-                      y: toY,
-                    })
-                  )
-                  .then(() => localforage.removeItem([fromX, fromY].toString()))
+                await storage.move([fromX, fromY], [toX, toY])
 
                 const hasParent = Object.values(data).find((item) =>
                   item.children.find(
                     (child) => child.x === fromX && child.y === fromY
                   )
                 )
-                if (hasParent) {
-                  await localforage
-                    .getItem([hasParent.x, hasParent.y].toString())
-                    .then((parent) =>
-                      localforage.setItem(
-                        [hasParent.x, hasParent.y].toString(),
-                        {
-                          ...parent,
-                          children: [
-                            ...parent.children.filter(
-                              (key) => key !== [fromX, fromY].toString()
-                            ),
-                            [toX, toY].toString(),
-                          ],
-                        }
-                      )
-                    )
-                }
+                if (hasParent)
+                  await storage.update(
+                    hasParent,
+                    ({ children, ...oldItem }) => ({
+                      ...oldItem,
+                      children: [
+                        ...children.filter(
+                          (key) => key !== [fromX, fromY].toString()
+                        ),
+                        [toX, toY].toString(),
+                      ],
+                    })
+                  )
 
                 force((s) => !s)
               }

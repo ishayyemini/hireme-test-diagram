@@ -5,6 +5,8 @@ import { Box, Button, Stack } from 'grommet'
 import ReactTooltip from 'react-tooltip'
 
 import EditFriend from './EditFriend'
+import { calcChildProfit } from '../data'
+import { _price } from '../config'
 
 const FriendWrapper = styled(Box).attrs({
   background: 'lightblue',
@@ -37,19 +39,6 @@ const EditButton = styled(Button).attrs({ title: 'edit' })`
   width: 24px;
   float: right;
 `
-
-const _price = 100
-const _childPercent = 0.2
-
-const calcChildProfit = (friend) => {
-  let profit = 0
-  if (friend.children?.length) {
-    friend.children.forEach((child) => {
-      profit += (calcChildProfit(child) + child.sales * _price) * _childPercent
-    })
-  }
-  return Math.round(profit)
-}
 
 const FriendBox = ({
   friend,

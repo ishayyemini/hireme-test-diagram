@@ -2,8 +2,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Box, Button } from 'grommet'
 import { saveAs } from 'file-saver'
-import localforage from 'localforage'
 import PropTypes from 'prop-types'
+
+import storage, { calcChildProfit } from '../data'
+import { _price, _maxY, _maxX } from '../config'
 
 const Wrapper = styled(Box).attrs({
   pad: 'medium',
@@ -16,39 +18,13 @@ const Wrapper = styled(Box).attrs({
   overflow: scroll;
 `
 
-const _price = 100
-const _childPercent = 0.2
-
-const childProfit = (friend) => {
-  let profit = 0
-  if (friend.children?.length) {
-    friend.children.forEach((child) => {
-      profit += (childProfit(child) + child.sales * _price) * _childPercent
-    })
-  }
-  return Math.round(profit)
-}
-
-const [_maxX, _maxY] = [10, 10]
-
 const InputExportBody = ({ setStage }) => {
   const inputRef = useRef()
 
   const [data, setData] = useState({})
 
   useEffect(() => {
-    const nextData = {}
-    localforage
-      .iterate((value, key) => {
-        nextData[key] = value
-      })
-      .then(() => {
-        Object.keys(nextData).forEach((key) => {
-          nextData[key].children =
-            nextData[key].children?.map((coords) => nextData[coords]) ?? []
-        })
-        setData(nextData)
-      })
+    storage.getAll().then(setData)
   }, [])
 
   const exportCSV = useCallback(() => {
@@ -64,8 +40,8 @@ const InputExportBody = ({ setStage }) => {
         name,
         sales,
         sales * _price,
-        childProfit({ children }),
-        sales * _price + childProfit({ children }),
+        calcChildProfit({ children }),
+        sales * _price + calcChildProfit({ children }),
       ]),
     ]
 
@@ -137,15 +113,7 @@ const InputExportBody = ({ setStage }) => {
                   } value(s).`
                 )
               )
-                localforage
-                  .clear()
-                  .then(() =>
-                    Promise.all(
-                      Object.entries(nextData).map(([key, value]) =>
-                        localforage.setItem(key, value)
-                      )
-                    ).then(() => setStage('normal'))
-                  )
+                storage.replaceAll(nextData).then(() => setStage('normal'))
             } else console.log('ERROR: BAD VALUES')
           } catch (e) {
             console.log('ERROR: PARSING')
