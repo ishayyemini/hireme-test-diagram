@@ -6,7 +6,7 @@ import ReactTooltip from 'react-tooltip'
 
 import EditFriend from './EditFriend'
 import { calcChildProfit } from '../data'
-import { _price } from '../config'
+import { _price } from '../config.json'
 
 const FriendWrapper = styled(Box).attrs({
   background: 'lightblue',

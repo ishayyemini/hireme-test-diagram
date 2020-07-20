@@ -5,7 +5,7 @@ import ReactTooltip from 'react-tooltip'
 import PropTypes from 'prop-types'
 
 import storage, { calcChildProfit } from '../data'
-import { _price } from '../config'
+import { _price } from '../config.json'
 
 const Wrapper = styled(Box)`
   max-width: 100%;

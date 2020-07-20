@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 
 import FriendBox from './FriendBox'
 import storage from '../data'
-import { _maxX, _maxY } from '../config'
+import { _maxX, _maxY } from '../config.json'
 
 const Wrapper = styled(Box)`
   max-width: 100%;

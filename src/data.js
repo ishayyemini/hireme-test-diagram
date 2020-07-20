@@ -1,5 +1,6 @@
-import { _childPercent, _price } from './config'
 import localforage from 'localforage'
+
+import { _childPercent, _price } from './config.json'
 
 export const calcChildProfit = (friend) => {
   let profit = 0

@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver'
 import PropTypes from 'prop-types'
 
 import storage, { calcChildProfit } from '../data'
-import { _price, _maxY, _maxX } from '../config'
+import { _price, _maxY, _maxX } from '../config.json'
 
 const Wrapper = styled(Box).attrs({
   pad: 'medium',
