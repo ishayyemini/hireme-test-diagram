@@ -47,7 +47,16 @@ const EditFriend = ({ friendValues: { x, y, name, sales }, submit }) => {
 
           <Box direction={'row'} justify={'center'}>
             <Button label={'Cancel'} type={'reset'} margin={'small'} />
-            <Button label={'Submit'} type={'submit'} margin={'small'} />
+            <Button
+              label={'Delete'}
+              onClick={() =>
+                window.confirm('Are you sure you want to delete this friend?')
+                  ? storage.delete([x, y]).then(submit)
+                  : null
+              }
+              margin={'small'}
+            />
+            <Button label={'Submit'} type={'submit'} margin={'small'} primary />
           </Box>
         </Box>
       </form>

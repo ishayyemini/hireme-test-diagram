@@ -61,12 +61,31 @@ const storage = {
       )
       .then(() => localforage.removeItem(getCoords(oldCoords).toString())),
 
-  add: async (coords, item) =>
+  add: (coords, item) =>
     localforage.setItem(getCoords(coords).toString(), {
       ...item,
       x: getCoords(coords)[0],
       y: getCoords(coords)[1],
     }),
+
+  delete: (coords) =>
+    localforage
+      .removeItem(getCoords(coords).toString())
+      .then(() =>
+        localforage.iterate((value, key) =>
+          value.children?.includes(getCoords(coords).toString())
+            ? { key, value }
+            : undefined
+        )
+      )
+      .then(({ key, value }) =>
+        localforage.setItem(key, {
+          ...value,
+          children: value.children.filter(
+            (child) => child !== getCoords(coords).toString()
+          ),
+        })
+      ),
 
   replaceAll: (items) =>
     localforage
