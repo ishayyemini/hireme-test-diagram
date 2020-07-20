@@ -35,9 +35,9 @@ const DiagramBody = ({ stage, setNextFriend, setStage }) => {
         rows={Array.from(Array(_maxY), () => '100px')}
         columns={Array.from(Array(_maxX), () => '100px')}
       >
-        {gridLayout.map((item, index) => (
+        {gridLayout.map((item) => (
           <FriendBox
-            friend={data[item.toString()]}
+            friend={data[item]}
             onEmptyClick={
               stage === 'select'
                 ? () => {
@@ -94,7 +94,7 @@ const DiagramBody = ({ stage, setNextFriend, setStage }) => {
             update={() => force((s) => !s)}
             id={item.toString()}
             stage={stage}
-            key={index}
+            key={data[item] ? `${item}-${data[item].children}` : item}
           />
         ))}
       </Grid>
